@@ -15,7 +15,7 @@ individual contracts or entities. In our company, the contract acts as the paren
 - In the output filename field, the user may enter shortcuts to auto enter program properties: {D} for date, {C} for contract number, and {N} for contract name.
 - After merging the PDFs, the status is shown above the 'Output Filename' label.
 
-##Concepts Learned and Used
+## Concepts Learned and Used
 - MVVM architecture: 
 - Properties using OnPropertyChanged to notify UI of changes
 - Data binding in XAML
