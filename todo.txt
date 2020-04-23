@@ -1,0 +1,4 @@
+add contract
+organize ui of contract details
+fix onload selection of contract
+fix open file dialog to be of working directory

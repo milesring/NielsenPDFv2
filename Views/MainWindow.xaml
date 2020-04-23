@@ -1,0 +1,115 @@
+﻿<Window x:Class="NielsenPDFv2.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NielsenPDFv2.ViewModels"
+        xmlns:Tools="clr-namespace:NielsenPDFv2.Tools"
+        mc:Ignorable="d"
+        Title="Nielsen PDF" Height="450" Width="800"
+        MinWidth="400" MinHeight="250">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding CommandParameter="{Binding }" Command="{Binding RemoveFileCommand}" Key="Delete"/>
+    </Window.InputBindings>
+    <Window.Resources>
+        <Tools:BuildStatusConverter x:Key="BuildStatusConverter"/>
+    </Window.Resources>
+    <DockPanel>
+        <Border BorderThickness="5" Padding="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" Padding="5">
+                    <StackPanel>
+                        <DatePicker SelectedDate="{Binding SelectedDate}" Margin="5,5,5,5" />
+                        <Label Content="{Binding Title}"/>
+                        <ComboBox Name="cb_Contracts" ItemsSource="{Binding Contracts}" SelectionChanged="cb_Contracts_SelectionChanged" Margin="10,5,10,0" Loaded="cb_Contracts_Loaded">
+                            <ComboBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="New Contract" CommandParameter="{Binding }" Command="{Binding AddContractCommand}"/>
+                                    <MenuItem Header="Remove Contract" CommandParameter="{Binding }" Command="{Binding RemoveContractCommand}"/>
+                                </ContextMenu>
+                            </ComboBox.ContextMenu>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="0" Grid.Column="2" Padding="5" Grid.RowSpan="2">
+                    <Grid Name="grid_ContractProperties" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.5*" MaxWidth="100"/>
+                            <ColumnDefinition Width="1*" MaxWidth="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" MaxHeight="50"/>
+                            <RowDefinition Height="1*" MaxHeight="50"/>
+                            <RowDefinition Height="1*" MaxHeight="50"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Name: " Margin="1,1,1,1"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedContract.ContractName}" Margin="5,10,5,10"/>
+                        <Label Grid.Row="1" Grid.Column="0" Content="Number: " Margin="1,1,1,1"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedContract.ContractNumber}" Margin="5,10,5,10"/>
+                        <Button Grid.Row="2" Grid.Column="1" Margin="5,10,5,10" Name="btn_SaveContract" Content="Save Changes" CommandParameter="{Binding }" Command="{Binding SaveContractCommand}" />
+                    </Grid>
+                </Border>
+                <Border Grid.Column="1" Grid.RowSpan="1" Padding="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="Working Directory" VerticalAlignment="Center"/>
+                        <TextBox x:Name="txtbox_WorkingDirectory" Grid.Column="1" MaxHeight="30" MinWidth="120" Text="{Binding WorkingDirectory}"  VerticalAlignment="Center"/>
+                        <Button Grid.Column="2" Content="Browse" Margin="20,20,20,20" VerticalAlignment="Center" CommandParameter="{Binding }" Command="{Binding BrowseFileCommand}"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" Padding="5">
+                    <ListView x:Name="lv_Input" ItemsSource="{Binding Files}" AllowDrop="True"
+                          PreviewMouseLeftButtonDown="lv_Input_PreviewMouseLeftButtonDown"
+                          MouseMove="lv_Input_MouseMove"
+                          DragEnter="lv_Input_DragEnter"
+                          Drop="lv_Input_Drop"
+                          SelectionChanged="lv_Input_SelectionChanged">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add PDF" CommandParameter="{Binding }" Command="{Binding AddFileCommand}"/>
+                                <MenuItem Header="Remove PDF" CommandParameter="{Binding }" Command="{Binding RemoveFileCommand}"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="#" DisplayMemberBinding="{Binding FileNum}"/>
+                                <GridViewColumn Header="File" DisplayMemberBinding="{Binding FileName}"/>
+                                <GridViewColumn Header="File Path" DisplayMemberBinding="{Binding FilePath}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Border>
+                <Border Grid.Column="2" Grid.Row="3" Grid.RowSpan="2" Padding="5">
+                    <StackPanel VerticalAlignment="Bottom">
+                        <Label Content="Output Filename:"/>
+                        <TextBox Name="txtOutput" Text="{Binding OutputName, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,5"/>
+                        <Button x:Name="button_BuildPDFS" Content="Build PDF" Margin="5,5,5,5" CommandParameter="{Binding }" Command="{Binding MergePDFCommand}" />
+                        <Viewbox StretchDirection="DownOnly">
+                            <Label Content="{Binding BuildStatus, FallbackValue=None}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding BuildStatus, Converter={StaticResource BuildStatusConverter}}"/>
+                        </Viewbox>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </DockPanel>
+</Window>
