@@ -23,5 +23,7 @@ individual contracts or entities. In our company, the contract acts as the paren
 - Commands: CanExecute requirements, passing command parameter
 - IValueConverter
 - SQlite for local storage
+- Project uses itext7 by iText Software for PDF modifications
+
 
 
