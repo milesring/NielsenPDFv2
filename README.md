@@ -1,6 +1,8 @@
 # A Rebuilt Company PDF Merger
 
-This was my excuse to get more familiar with WPF and the MVVM architecture.
+This was my excuse to get more familiar with WPF and the MVVM architecture by
+updating the previous Nielsen PDF Creator that used outdated WinForms.
+The code for the project is massively ugly and I wanted to make something new and clean.
 The whole idea of the application is based around creating merged pdfs for
 individual contracts or entities. In our company, the contract acts as the parent of the pdf.
 

@@ -1,0 +1,28 @@
+﻿<Window x:Class="NielsenPDFv2.Views.EditContract"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NielsenPDFv2.Views"
+        mc:Ignorable="d"
+        Title="Edit Contract" 
+        Height="130" 
+        Width="218" 
+        VerticalAlignment="Stretch" 
+        HorizontalAlignment="Stretch"
+        ResizeMode="NoResize">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            <Label Content="Name: " Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBox Text="{Binding SelectedContract.ContractName}" Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            <Label Content="Number: " Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBox Text="{Binding SelectedContract.ContractNumber}" Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" LastChildFill="False" HorizontalAlignment="Center">
+            <Button Name="btn_SaveContract" Content="Save Changes" Margin="1,1,1,1" CommandParameter="{Binding }" Command="{Binding SaveContractCommand}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Button Name="btn_Close" Content="Close" Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </DockPanel>
+    </DockPanel>
+</Window>

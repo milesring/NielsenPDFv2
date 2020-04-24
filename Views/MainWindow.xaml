@@ -40,29 +40,12 @@
                             <ComboBox.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="New Contract" CommandParameter="{Binding }" Command="{Binding AddContractCommand}"/>
+                                    <MenuItem Header="Edit Contract" CommandParameter="{Binding }" Command="{Binding EditContractCommand}"/>
                                     <MenuItem Header="Remove Contract" CommandParameter="{Binding }" Command="{Binding RemoveContractCommand}"/>
                                 </ContextMenu>
                             </ComboBox.ContextMenu>
                         </ComboBox>
                     </StackPanel>
-                </Border>
-                <Border Grid.Row="0" Grid.Column="2" Padding="5" Grid.RowSpan="2">
-                    <Grid Name="grid_ContractProperties" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.5*" MaxWidth="100"/>
-                            <ColumnDefinition Width="1*" MaxWidth="100"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*" MaxHeight="50"/>
-                            <RowDefinition Height="1*" MaxHeight="50"/>
-                            <RowDefinition Height="1*" MaxHeight="50"/>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="Name: " Margin="1,1,1,1"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedContract.ContractName}" Margin="5,10,5,10"/>
-                        <Label Grid.Row="1" Grid.Column="0" Content="Number: " Margin="1,1,1,1"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedContract.ContractNumber}" Margin="5,10,5,10"/>
-                        <Button Grid.Row="2" Grid.Column="1" Margin="5,10,5,10" Name="btn_SaveContract" Content="Save Changes" CommandParameter="{Binding }" Command="{Binding SaveContractCommand}" />
-                    </Grid>
                 </Border>
                 <Border Grid.Column="1" Grid.RowSpan="1" Padding="5">
                     <Grid>
@@ -99,8 +82,8 @@
                         </ListView.View>
                     </ListView>
                 </Border>
-                <Border Grid.Column="2" Grid.Row="2" Grid.RowSpan="3" Padding="5">
-                    <StackPanel VerticalAlignment="Bottom">
+                <Border Grid.Column="2" Grid.Row="0" Grid.RowSpan="5" Padding="5">
+                    <StackPanel VerticalAlignment="Top">
                         <Label Content="Output Filename:" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <TextBox Name="txtOutput" Text="{Binding OutputName, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                         <StackPanel Name="FileOptions">

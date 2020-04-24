@@ -33,6 +33,7 @@ namespace NielsenPDFv2.ViewModels
         private AddContractCommand addContractCommand;
         private RemoveContractCommand removeContractCommand;
         private SaveContractCommand saveContractCommand;
+        private EditContractCommand editContractCommand;
         private string buildStatus;
         private bool overwriteFile;
         private bool encrypt;
@@ -139,6 +140,7 @@ namespace NielsenPDFv2.ViewModels
                 }
                 BuildStatus = "Success: PDF Successfully Created";
             }
+            //CLEAN UP THIS EXCEPTION GARBAGE EVENTUALLY
             catch(iText.IO.IOException e)
             {
                 BuildStatus = "Failed: Corrupt PDF";
@@ -466,6 +468,22 @@ namespace NielsenPDFv2.ViewModels
             set
             {
                 saveContractCommand = value;
+            }
+        }
+
+        public EditContractCommand EditContractCommand
+        {
+            get
+            {
+                if(editContractCommand == null)
+                {
+                    editContractCommand = new EditContractCommand();
+                }
+                return editContractCommand;
+            }
+            set
+            {
+                editContractCommand = value;
             }
         }
         #endregion
