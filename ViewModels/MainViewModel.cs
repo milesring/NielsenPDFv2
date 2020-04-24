@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Text;
+using System.Windows;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using NielsenPDFv2.Commands;
@@ -32,6 +34,9 @@ namespace NielsenPDFv2.ViewModels
         private RemoveContractCommand removeContractCommand;
         private SaveContractCommand saveContractCommand;
         private string buildStatus;
+        private bool overwriteFile;
+        private bool encrypt;
+        private string pdfPass;
         #endregion
 
         public MainViewModel()
@@ -82,13 +87,39 @@ namespace NielsenPDFv2.ViewModels
             PdfDocument doc = null;
             try
             {
-                pdf = new PdfDocument(new PdfWriter(outputPath));
+                if (File.Exists(outputPath))
+                {
+                    if (!OverwriteFile)
+                    {
+                        BuildStatus = "Failed: Output PDF already exists.";
+                        return;
+                    }
+                    else
+                    {
+                        outputPath = Path.Combine(WorkingDirectory, "PDFTemp", OutputName + ".pdf");
+                        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+                    }
+                }
+                if (Encrypt)
+                {
+                    pdf = new PdfDocument(new PdfWriter(outputPath, new WriterProperties()
+                        .SetStandardEncryption(
+                        Encoding.ASCII.GetBytes(PDFPass),
+                        null,
+                        EncryptionConstants.ALLOW_PRINTING,
+                        EncryptionConstants.ENCRYPTION_AES_256 | EncryptionConstants.DO_NOT_ENCRYPT_METADATA)
+                        ));
+                }
+                else
+                {
+                    pdf = new PdfDocument(new PdfWriter(outputPath));
+                }
                 merger = new PdfMerger(pdf);
                 foreach (FileObject file in Files)
                 {
                     if (!File.Exists(file.FilePath))
                     {
-                        BuildStatus = $"Failed: {file.FileName} no longer exists and has been removed from the list";
+                        BuildStatus = $"Failed: {file.FileName} no longer exists and has been removed from the list.";
                         Files.Remove(file);
                         pdf.Close();
                         merger.Close();
@@ -101,6 +132,11 @@ namespace NielsenPDFv2.ViewModels
                         doc.Close();
                 }
                 pdf.Close();
+                if (OverwriteFile)
+                {
+                    File.Move(outputPath, Path.Combine(WorkingDirectory, OutputName + ".pdf"), true);
+                    Directory.Delete(Path.GetDirectoryName(outputPath), true);
+                }
                 BuildStatus = "Success: PDF Successfully Created";
             }
             catch(iText.IO.IOException e)
@@ -290,6 +326,36 @@ namespace NielsenPDFv2.ViewModels
             {
                 buildStatus = value;
                 OnPropertyChanged(nameof(BuildStatus));
+            }
+        }
+
+        public bool OverwriteFile
+        {
+            get { return overwriteFile; }
+            set
+            {
+                overwriteFile = value;
+                OnPropertyChanged(nameof(OverwriteFile));
+            }
+        }
+
+        public bool Encrypt
+        {
+            get { return encrypt; }
+            set
+            {
+                encrypt = value;
+                OnPropertyChanged(nameof(Encrypt));
+            }
+        }
+
+        public string PDFPass
+        {
+            get { return pdfPass; }
+            set
+            {
+                pdfPass = value;
+                OnPropertyChanged(nameof(PDFPass));
             }
         }
         #endregion
