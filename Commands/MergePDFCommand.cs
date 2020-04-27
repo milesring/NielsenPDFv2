@@ -113,7 +113,7 @@ namespace NielsenPDFv2.Commands
                     doc.Close();
                 }
                 pdf.Close();
-                if (viewModel.OverwriteFile && !File.Exists(outputPath))
+                if (viewModel.OverwriteFile && File.Exists(Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf")))
                 {
                     File.Move(outputPath, Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf"), true);
                     Directory.Delete(Path.GetDirectoryName(outputPath), true);
