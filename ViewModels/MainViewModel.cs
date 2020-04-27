@@ -18,10 +18,10 @@ namespace NielsenPDFv2.ViewModels
 
         #region Locals
         private string title;
-        private ObservableCollection<Contract> contracts = new ObservableCollection<Contract>();
+        private ObservableCollection<Contract> contracts;
         private Contract selectedContract;
         private string workingDirectory = "No Working Directory";
-        private ObservableCollection<FileObject> files = new ObservableCollection<FileObject>();
+        private ObservableCollection<FileObject> files;
         private List<FileObject> selectedFiles = new List<FileObject>();
         private Utility utility = new Utility();
         private string outputName;
@@ -136,10 +136,24 @@ namespace NielsenPDFv2.ViewModels
         }
         #endregion
 
+        #region Events
+        private void Files_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            ResetBuildStatus();
+        }
+        #endregion
+
         #region Properties
         public ObservableCollection<Contract> Contracts
         {
-            get { return contracts; }
+            get 
+            { 
+                if(contracts == null)
+                {
+                    contracts = new ObservableCollection<Contract>();
+                }
+                return contracts; 
+            }
             set
             {
                 contracts = value;
@@ -150,14 +164,25 @@ namespace NielsenPDFv2.ViewModels
 
         public ObservableCollection<FileObject> Files
         {
-            get { return files; }
+            get 
+            { 
+                if(files == null)
+                {
+                    files = new ObservableCollection<FileObject>();
+                    files.CollectionChanged += Files_CollectionChanged;
+                }
+                return files; 
+            }
             set
             {
                 files = value;
+                files.CollectionChanged += Files_CollectionChanged;
                 ResetBuildStatus();
                 OnPropertyChanged(nameof(Files));
             }
         }
+
+
 
         public List<FileObject> SelectedFiles
         {
@@ -226,6 +251,7 @@ namespace NielsenPDFv2.ViewModels
             {
                 outputName = value;
                 CheckForStringShortcuts();
+                ResetBuildStatus();
                 OnPropertyChanged(nameof(OutputName));
             }
         }
