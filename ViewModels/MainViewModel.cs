@@ -64,9 +64,9 @@ namespace NielsenPDFv2.ViewModels
             }
         }
 
-        public void RemoveContract(Contract c)
+        public void RemoveContractAsync(Contract c)
         {
-            DeleteContract(c);
+           DeleteContract(c);
         }
 
         public void AddContract()
@@ -77,87 +77,6 @@ namespace NielsenPDFv2.ViewModels
         public void SaveContract()
         {
             SaveContractAsync();
-        }
-
-        public void MergePDFs()
-        {
-            BuildStatus = "Merging PDFs...";
-            string outputPath = WorkingDirectory + "\\" + OutputName + ".pdf";
-            PdfDocument pdf = null;
-            PdfMerger merger = null;
-            PdfDocument doc = null;
-            try
-            {
-                if (File.Exists(outputPath))
-                {
-                    if (!OverwriteFile)
-                    {
-                        BuildStatus = "Failed: Output PDF already exists.";
-                        return;
-                    }
-                    else
-                    {
-                        outputPath = Path.Combine(WorkingDirectory, "PDFTemp", OutputName + ".pdf");
-                        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
-                    }
-                }
-                if (Encrypt)
-                {
-                    pdf = new PdfDocument(new PdfWriter(outputPath, new WriterProperties()
-                        .SetStandardEncryption(
-                        Encoding.ASCII.GetBytes(PDFPass),
-                        null,
-                        EncryptionConstants.ALLOW_PRINTING,
-                        EncryptionConstants.ENCRYPTION_AES_256 | EncryptionConstants.DO_NOT_ENCRYPT_METADATA)
-                        ));
-                }
-                else
-                {
-                    pdf = new PdfDocument(new PdfWriter(outputPath));
-                }
-                merger = new PdfMerger(pdf);
-                foreach (FileObject file in Files)
-                {
-                    if (!File.Exists(file.FilePath))
-                    {
-                        BuildStatus = $"Failed: {file.FileName} no longer exists and has been removed from the list.";
-                        Files.Remove(file);
-                        pdf.Close();
-                        merger.Close();
-                        File.Delete(outputPath);
-                        return;
-                    }
-
-                    doc = new PdfDocument(new PdfReader(file.FilePath));
-                    merger.Merge(doc, 1, doc.GetNumberOfPages());
-                        doc.Close();
-                }
-                pdf.Close();
-                if (OverwriteFile)
-                {
-                    File.Move(outputPath, Path.Combine(WorkingDirectory, OutputName + ".pdf"), true);
-                    Directory.Delete(Path.GetDirectoryName(outputPath), true);
-                }
-                BuildStatus = "Success: PDF Successfully Created";
-            }
-            //CLEAN UP THIS EXCEPTION GARBAGE EVENTUALLY
-            catch(iText.IO.IOException e)
-            {
-                BuildStatus = "Failed: Corrupt PDF";
-            }
-            catch(iText.Kernel.PdfException e)
-            {
-                BuildStatus = "Failed: Corrupt PDF";
-            }
-            catch (FileNotFoundException e)
-            {
-                BuildStatus = "Failed: A PDF in the list no longer exists";
-            }
-            catch (IOException e)
-            {
-                BuildStatus = "Failed: Attempting to modify a file in use";
-            }
-            
         }
         #endregion
 

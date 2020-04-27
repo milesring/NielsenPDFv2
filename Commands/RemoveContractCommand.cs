@@ -27,7 +27,7 @@ namespace NielsenPDFv2.Commands
         public void Execute(object parameter)
         {
             var viewModel = parameter as MainViewModel;
-            viewModel.RemoveContract(viewModel.SelectedContract);
+            viewModel.RemoveContractAsync(viewModel.SelectedContract);
         }
     }
 }
