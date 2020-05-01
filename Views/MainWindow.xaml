@@ -16,6 +16,7 @@
     </Window.InputBindings>
     <Window.Resources>
         <Tools:BuildStatusConverter x:Key="BuildStatusConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
@@ -93,6 +94,7 @@
                             <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="{Binding Encrypt}" Text="{Binding PDFPass}"/>
                         </StackPanel>
                         <Button x:Name="button_BuildPDFS" Content="Build PDF" Margin="5,5,5,5" CommandParameter="{Binding }" Command="{Binding MergePDFCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ProgressBar Width="150" Height="5"  VerticalAlignment="Center" Margin="5,5,5,5" Minimum="0" Maximum="{Binding Files.Count}" Value="{Binding BuildProgress}" Visibility="{Binding IsBuilding, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <Viewbox StretchDirection="DownOnly">
                             <Label Content="{Binding BuildStatus, FallbackValue=None}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding BuildStatus, Converter={StaticResource BuildStatusConverter}}"/>
                         </Viewbox>

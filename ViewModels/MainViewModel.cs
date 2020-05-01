@@ -35,6 +35,8 @@ namespace NielsenPDFv2.ViewModels
         private SaveContractCommand saveContractCommand;
         private EditContractCommand editContractCommand;
         private string buildStatus;
+        private int buildProgress;
+        private bool isBuilding = false;
         private bool overwriteFile;
         private bool encrypt;
         private string pdfPass;
@@ -110,7 +112,7 @@ namespace NielsenPDFv2.ViewModels
         {
             if (OutputName.Contains("{D}"))
             {
-                OutputName = OutputName.Replace("{D}", SelectedDate.ToString("M-dd-yy"));
+                OutputName = OutputName.Replace("{D}", SelectedDate.ToString("M-d-yy"));
             }
 
             if (OutputName.Contains("{C}"))
@@ -127,6 +129,7 @@ namespace NielsenPDFv2.ViewModels
         private void ResetBuildStatus()
         {
             BuildStatus = string.Empty;
+            IsBuilding = false;
         }
 
         private void ResetFilesAndOutput()
@@ -273,6 +276,26 @@ namespace NielsenPDFv2.ViewModels
             {
                 buildStatus = value;
                 OnPropertyChanged(nameof(BuildStatus));
+            }
+        }
+
+        public int BuildProgress
+        {
+            get { return buildProgress; }
+            set
+            {
+                buildProgress = value;
+                OnPropertyChanged(nameof(BuildProgress));
+            }
+        }
+
+        public bool IsBuilding
+        {
+            get { return isBuilding; }
+            set
+            {
+                isBuilding = value;
+                OnPropertyChanged(nameof(IsBuilding));
             }
         }
 

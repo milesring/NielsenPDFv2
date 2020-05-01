@@ -5,6 +5,7 @@ using NielsenPDFv2.ViewModels;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
@@ -46,6 +47,8 @@ namespace NielsenPDFv2.Commands
         {
             //viewModel.MergePDFs();
             viewModel.BuildStatus = "Merging PDFs...";
+            viewModel.IsBuilding = true;
+            viewModel.BuildProgress = 0;
             string outputPath = viewModel.WorkingDirectory + "\\" + viewModel.OutputName + ".pdf";
             PdfDocument pdf = null;
             PdfMerger merger = null;
@@ -111,6 +114,8 @@ namespace NielsenPDFv2.Commands
                     
                     merger.Merge(doc, 1, doc.GetNumberOfPages());
                     doc.Close();
+                    viewModel.BuildProgress++;
+                    Thread.Sleep(20);
                 }
                 pdf.Close();
                 if (viewModel.OverwriteFile && File.Exists(Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf")))
