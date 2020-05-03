@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Text;
-using System.Windows;
-using iText.Kernel.Pdf;
-using iText.Kernel.Utils;
 using NielsenPDFv2.Commands;
 using NielsenPDFv2.Models;
 using NielsenPDFv2.Tools;
@@ -40,6 +35,7 @@ namespace NielsenPDFv2.ViewModels
         private bool overwriteFile;
         private bool encrypt;
         private string pdfPass;
+        private int totalPages;
         #endregion
 
         public MainViewModel()
@@ -51,10 +47,13 @@ namespace NielsenPDFv2.ViewModels
         #region Public Methods
         public void AddFile(string path)
         {
-            Files.Add(new FileObject { FileName = utility.TrimFileName(path), FilePath = path, FileNum = Files.Count + 1 });
+            var file = new FileObject { FileName = utility.TrimFileName(path), FilePath = path, FileNum = Files.Count + 1, NumPages = PDFTools.GetTotalPages(path) };
+            TotalPages += file.NumPages;
+            Files.Add(file);
         }
         public void RemoveFile(FileObject file)
         {
+            TotalPages -= file.NumPages;
             _ = Files.Remove(file);
         }
 
@@ -325,6 +324,16 @@ namespace NielsenPDFv2.ViewModels
             {
                 pdfPass = value;
                 OnPropertyChanged(nameof(PDFPass));
+            }
+        }
+
+        public int TotalPages
+        {
+            get { return totalPages; }
+            set
+            {
+                totalPages = value;
+                OnPropertyChanged(nameof(TotalPages));
             }
         }
         #endregion

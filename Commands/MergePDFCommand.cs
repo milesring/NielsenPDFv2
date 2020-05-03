@@ -118,10 +118,10 @@ namespace NielsenPDFv2.Commands
                             doc = new PdfDocument(pdfReader);
                         }
                     }
-                    
-                    merger.Merge(doc, 1, doc.GetNumberOfPages());
+                    var numPages = doc.GetNumberOfPages();
+                    merger.Merge(doc, 1, numPages);
                     doc.Close();
-                    viewModel.BuildProgress++;
+                    viewModel.BuildProgress+=numPages;
                 }
                 pdf.Close();
                 if (viewModel.OverwriteFile && File.Exists(Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf")))

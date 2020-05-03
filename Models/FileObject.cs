@@ -11,6 +11,7 @@ namespace NielsenPDFv2.Models
         private string fileName;
         private string filePath;
         private int fileNum;
+        private int numPages;
         #endregion
 
         public FileObject() { }
@@ -43,6 +44,16 @@ namespace NielsenPDFv2.Models
             {
                 fileNum = value;
                 OnPropertyChanged(nameof(FileNum));
+            }
+        }
+
+        public int NumPages
+        {
+            get { return numPages; }
+            set
+            {
+                numPages = value;
+                OnPropertyChanged(nameof(NumPages));
             }
         }
         #endregion
