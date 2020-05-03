@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
@@ -22,8 +23,13 @@ namespace NielsenPDFv2.Commands
         public bool CanExecute(object parameter)
         {
             MainViewModel viewModel = parameter as MainViewModel;
+
+            if (viewModel.IsBuilding)
+                return false;
+
             if (viewModel.Files.Count < 1)
                 return false;
+
             if (string.IsNullOrWhiteSpace(viewModel.WorkingDirectory))
             {
                 return false;
@@ -37,17 +43,18 @@ namespace NielsenPDFv2.Commands
             return true;
         }
 
-        public void Execute(object parameter)
+        public async void Execute(object parameter)
         {
-            MergePDFs(parameter as MainViewModel);
-            
+            var viewModel = parameter as MainViewModel;
+            viewModel.IsBuilding = true;
+            await Task.Run(()=>MergePDFs(viewModel));
+            viewModel.IsBuilding = false;
+
         }
 
-        private void MergePDFs(MainViewModel viewModel)
+        private async Task MergePDFs(MainViewModel viewModel)
         {
-            //viewModel.MergePDFs();
             viewModel.BuildStatus = "Merging PDFs...";
-            viewModel.IsBuilding = true;
             viewModel.BuildProgress = 0;
             string outputPath = viewModel.WorkingDirectory + "\\" + viewModel.OutputName + ".pdf";
             PdfDocument pdf = null;
@@ -115,7 +122,6 @@ namespace NielsenPDFv2.Commands
                     merger.Merge(doc, 1, doc.GetNumberOfPages());
                     doc.Close();
                     viewModel.BuildProgress++;
-                    Thread.Sleep(20);
                 }
                 pdf.Close();
                 if (viewModel.OverwriteFile && File.Exists(Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf")))

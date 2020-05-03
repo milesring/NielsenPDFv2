@@ -129,7 +129,6 @@ namespace NielsenPDFv2.ViewModels
         private void ResetBuildStatus()
         {
             BuildStatus = string.Empty;
-            IsBuilding = false;
         }
 
         private void ResetFilesAndOutput()

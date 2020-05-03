@@ -2,6 +2,7 @@
 using NielsenPDFv2.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Windows.Input;
 
@@ -20,6 +21,11 @@ namespace NielsenPDFv2.Commands
             var viewModel = parameter as MainViewModel;
 
             if(viewModel.SelectedContract == null)
+            {
+                return false;
+            }
+
+            if (viewModel.IsBuilding)
             {
                 return false;
             }
