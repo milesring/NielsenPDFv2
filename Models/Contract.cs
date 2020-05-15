@@ -49,8 +49,6 @@ namespace NielsenPDFv2.Models
                 OnPropertyChanged(nameof(LastUsedDirectory));
             }
         }
-
-
         #endregion
 
         #region INotifyPropertyChanged
@@ -67,7 +65,49 @@ namespace NielsenPDFv2.Models
         #endregion
 
 
+        public object Shallowcopy()
+        {
+            return MemberwiseClone();
+        }
+
+
+        //ignores ID
+        public bool WeakCompare(Contract other)
+        {
+            if(!ContractName.Equals(other.ContractName))
+            {
+                return false;
+            }
+            if(!ContractNumber.Equals(other.ContractNumber))
+            {
+                return false;
+            }
+            if (!LastUsedDirectory.Equals(other.LastUsedDirectory))
+            {
+                return false;
+            }
+            return true;
+
+        }
+
+        //checks all fields
+        public bool FullCompare(Contract other)
+        {
+            throw new NotImplementedException();
+        }
+
         public
-            override string ToString() => ContractName + ": " + ContractNumber;
+        override string ToString()
+        {
+            if (string.IsNullOrWhiteSpace(ContractName))
+            {
+                return ContractNumber;
+            }
+            if (string.IsNullOrWhiteSpace(ContractNumber))
+            {
+                return ContractName;
+            }
+            return ContractName + ": " + ContractNumber;
+        }
     }
 }

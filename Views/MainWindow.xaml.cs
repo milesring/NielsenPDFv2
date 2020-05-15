@@ -28,7 +28,7 @@ namespace NielsenPDFv2.Views
 
         public void cb_Contracts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            viewModel.SelectedContract = (Models.Contract)cb_Contracts.SelectedItem;
+            viewModel.SelectedContract = (Contract)cb_Contracts.SelectedItem;
             if(viewModel.SelectedContract == null)
             {
                 cb_Contracts.SelectedIndex = 0;

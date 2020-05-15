@@ -1,12 +1,14 @@
-﻿using NielsenPDFv2.ViewModels;
+﻿using NielsenPDFv2.Models;
+using NielsenPDFv2.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
 {
-    class AddContractCommand : ICommand
+    public class AddContractCommand : ICommand
     {
         public event EventHandler CanExecuteChanged
         {
@@ -21,8 +23,13 @@ namespace NielsenPDFv2.Commands
 
         public void Execute(object parameter)
         {
-            var viewModel = parameter as MainViewModel;
-            viewModel.AddContract();
+            var viewModel = parameter as SettingsViewModel;
+            Contract c = new Contract() { ContractName = "New Contract", ContractNumber = "", LastUsedDirectory = "" };
+            App.Database.SaveContractAsync(c).Wait();
+            viewModel.Refresh = true;
+            viewModel.SelectedIndex = viewModel.Contracts.Count;
+            viewModel.LoadContractsCommand.Execute(viewModel);
         }
+
     }
 }

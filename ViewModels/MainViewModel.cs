@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.InteropServices.WindowsRuntime;
 using NielsenPDFv2.Commands;
 using NielsenPDFv2.Models;
 using NielsenPDFv2.Tools;
 
 namespace NielsenPDFv2.ViewModels
 {
-    class MainViewModel : INotifyPropertyChanged
+    class MainViewModel : ViewModel
     {
 
         #region Locals
         private string title;
         private ObservableCollection<Contract> contracts;
         private Contract selectedContract;
+        private int selectedIndex;
         private string workingDirectory = "No Working Directory";
         private ObservableCollection<FileObject> files;
         private List<FileObject> selectedFiles = new List<FileObject>();
@@ -25,10 +27,7 @@ namespace NielsenPDFv2.ViewModels
         private AddFileCommand addFileCommand;
         private RemoveFileCommand removeFileCommand;
         private BrowseFileCommand browseFileCommand;
-        private AddContractCommand addContractCommand;
-        private RemoveContractCommand removeContractCommand;
-        private SaveContractCommand saveContractCommand;
-        private EditContractCommand editContractCommand;
+        private OpenSettingsCommand openSettingsCommand;
         private string buildStatus;
         private int buildProgress;
         private bool isBuilding = false;
@@ -36,6 +35,7 @@ namespace NielsenPDFv2.ViewModels
         private bool encrypt;
         private string pdfPass;
         private int totalPages;
+        private bool? refresh;
         #endregion
 
         public MainViewModel()
@@ -69,41 +69,29 @@ namespace NielsenPDFv2.ViewModels
         {
            DeleteContract(c);
         }
-
-        public void AddContract()
-        {
-            AddContractAsync();
-        }
-
-        public void SaveContract()
-        {
-            SaveContractAsync();
-        }
         #endregion
 
         #region Private Methods
         private async void LoadItems()
         {
-            var items = await App.Database.GetContractsAsync();
+            var initialIndex = SelectedIndex;
+            List<Contract> items;
+            if (selectedIndex == 0)
+            {
+                items = await App.Database.GetContractsAsync();
+            }
+            else
+            {
+                var task = App.Database.GetContractsAsync();
+                items = task.Result;
+            }
             Contracts = new ObservableCollection<Contract>(items);
+            SelectedIndex = initialIndex;
         }
 
         private async void DeleteContract(Contract c)
         {
             await App.Database.DeleteContractAsync(c);
-            LoadItems();
-        }
-
-        private async void AddContractAsync()
-        {
-            Contract c = new Contract() { ContractName = "New Contract", ContractNumber = "000000", LastUsedDirectory = "" };
-            await App.Database.SaveContractAsync(c);
-            LoadItems();
-        }
-
-        private async void SaveContractAsync()
-        {
-            await App.Database.SaveContractAsync(SelectedContract);
             LoadItems();
         }
 
@@ -183,8 +171,6 @@ namespace NielsenPDFv2.ViewModels
             }
         }
 
-
-
         public List<FileObject> SelectedFiles
         {
             get { return selectedFiles; }
@@ -194,6 +180,7 @@ namespace NielsenPDFv2.ViewModels
                 OnPropertyChanged(nameof(SelectedFiles));
             }
         }
+
         public string Title {
             get
             { return title; } 
@@ -203,6 +190,7 @@ namespace NielsenPDFv2.ViewModels
                 OnPropertyChanged(nameof(Title));
             } 
         }
+
         public string WorkingDirectory
         {
             get { return workingDirectory; }
@@ -244,6 +232,15 @@ namespace NielsenPDFv2.ViewModels
                 OnPropertyChanged(nameof(SelectedContract));
             }
         } 
+
+        public int SelectedIndex
+        {
+            get { return selectedIndex; }
+            set { 
+                selectedIndex = value;
+                OnPropertyChanged(nameof(SelectedIndex));
+            }
+        }
 
         public string OutputName
         {
@@ -336,6 +333,20 @@ namespace NielsenPDFv2.ViewModels
                 OnPropertyChanged(nameof(TotalPages));
             }
         }
+
+        public bool? Refresh
+        {
+            get { return refresh; }
+            set
+            {
+                refresh = value;
+                if (refresh == true)
+                {
+                    LoadItems();
+                }
+                OnPropertyChanged(nameof(Refresh));
+            }
+        }
         #endregion
 
         #region Commands
@@ -402,79 +413,25 @@ namespace NielsenPDFv2.ViewModels
             }
         }
 
-        public AddContractCommand AddContractCommand
+
+        public OpenSettingsCommand OpenSettingsCommand
         {
             get
             {
-                if(addContractCommand == null)
+                if(openSettingsCommand == null)
                 {
-                    addContractCommand = new AddContractCommand();
+                    openSettingsCommand = new OpenSettingsCommand();
                 }
-                return addContractCommand;
+                return openSettingsCommand;
             }
             set
             {
-                addContractCommand = value;
-            }
-        }
-
-        public RemoveContractCommand RemoveContractCommand
-        {
-            get
-            {
-                if(removeContractCommand == null)
-                {
-                    removeContractCommand = new RemoveContractCommand();
-                }
-                return removeContractCommand;
-            }
-            set { removeContractCommand = value; }
-        }
-
-        public SaveContractCommand SaveContractCommand
-        {
-            get
-            {
-                if (saveContractCommand == null)
-                {
-                    saveContractCommand = new SaveContractCommand();
-                }
-                return saveContractCommand;
-            }
-            set
-            {
-                saveContractCommand = value;
-            }
-        }
-
-        public EditContractCommand EditContractCommand
-        {
-            get
-            {
-                if(editContractCommand == null)
-                {
-                    editContractCommand = new EditContractCommand();
-                }
-                return editContractCommand;
-            }
-            set
-            {
-                editContractCommand = value;
+                openSettingsCommand = value;
+                OnPropertyChanged(nameof(OpenSettingsCommand));
             }
         }
         #endregion
 
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string info)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(info));
-            }
-        }
-        #endregion
     }
 }

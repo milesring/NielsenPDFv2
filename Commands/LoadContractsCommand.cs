@@ -1,18 +1,16 @@
 ﻿using NielsenPDFv2.Models;
 using NielsenPDFv2.ViewModels;
+using SQLitePCL;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
 {
-    public class SaveContractCommand : ICommand
+    public class LoadContractsCommand : ICommand
     {
-        public SaveContractCommand()
-        {
-
-        }
-
         public event EventHandler CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
@@ -21,24 +19,26 @@ namespace NielsenPDFv2.Commands
 
         public bool CanExecute(object parameter)
         {
-            var viewModel = parameter as SettingsViewModel;
-            if(viewModel.SelectedContract == null)
-            {
-                return false;
-            }
-            if(viewModel.SelectedContract.WeakCompare(viewModel.OriginalContract))
-            {
-                return false;
-            }
             return true;
         }
 
         public void Execute(object parameter)
         {
+            LoadItems(parameter);
+        }
+
+        private async void LoadItems(object parameter)
+        {
             var viewModel = parameter as SettingsViewModel;
-            App.Database.SaveContractAsync(viewModel.SelectedContract).Wait();
-            viewModel.Refresh = true;
-            viewModel.LoadContractsCommand.Execute(viewModel);
+            var selectedIndex = viewModel.SelectedIndex;
+            var items = await App.Database.GetContractsAsync();
+            viewModel.Contracts.Clear();
+            foreach(var item in items)
+            {
+                viewModel.Contracts.Add(item);
+            }
+            viewModel.SelectedIndex = selectedIndex;
+            
         }
     }
 }

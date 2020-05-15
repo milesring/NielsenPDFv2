@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
 {
-    class EditContractCommand : ICommand
+    class OpenSettingsCommand : ICommand
     {
         private EditContract editContractView;
         public event EventHandler CanExecuteChanged
@@ -19,28 +19,17 @@ namespace NielsenPDFv2.Commands
 
         public bool CanExecute(object parameter)
         {
-            var mainViewModel = parameter as MainViewModel;
-            if (mainViewModel.SelectedContract != null)
-            {
-                return true;
-            }
-            return false;
+            return true;
         }
 
         public void Execute(object parameter)
         {
             var mainViewModel = parameter as MainViewModel;
             editContractView = new EditContract();
-            editContractView.DataContext = mainViewModel;
             editContractView.Owner = Application.Current.MainWindow;
             editContractView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            editContractView.btn_Close.Click += Btn_Close_Click1;
-            editContractView.ShowDialog();
-        }
+            mainViewModel.Refresh = editContractView.ShowDialog();
 
-        private void Btn_Close_Click1(object sender, RoutedEventArgs e)
-        {
-            editContractView.Close();
         }
     }
 }

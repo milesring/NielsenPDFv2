@@ -39,16 +39,14 @@
                 </Grid.RowDefinitions>
                 <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" Padding="5">
                     <StackPanel>
-
                         <Label Content="{Binding Title}"/>
-                        <ComboBox Name="cb_Contracts" ItemsSource="{Binding Contracts}" SelectionChanged="cb_Contracts_SelectionChanged" Margin="10,5,10,0" Loaded="cb_Contracts_Loaded" IsEnabled="{Binding IsBuilding, Converter={StaticResource InverseBoolConverter}}">
-                            <ComboBox.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="New Contract" CommandParameter="{Binding }" Command="{Binding AddContractCommand}"/>
-                                    <MenuItem Header="Edit Contract" CommandParameter="{Binding }" Command="{Binding EditContractCommand}"/>
-                                    <MenuItem Header="Remove Contract" CommandParameter="{Binding }" Command="{Binding RemoveContractCommand}"/>
-                                </ContextMenu>
-                            </ComboBox.ContextMenu>
+                        <ComboBox Name="cb_Contracts" 
+                                  ItemsSource="{Binding Contracts}" 
+                                  SelectedIndex="{Binding SelectedIndex}"
+                                  SelectionChanged="cb_Contracts_SelectionChanged" 
+                                  Margin="10,5,10,0" 
+                                  Loaded="cb_Contracts_Loaded" 
+                                  IsEnabled="{Binding IsBuilding, Converter={StaticResource InverseBoolConverter}}">
                         </ComboBox>
                     </StackPanel>
                 </Border>
@@ -83,7 +81,10 @@
                 </Border>
                 <Border Grid.Column="2" Grid.Row="0" Grid.RowSpan="5" Padding="5">
                     <StackPanel VerticalAlignment="Top">
-                        <DatePicker SelectedDate="{Binding SelectedDate}" Margin="5,5,5,5"/>
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker SelectedDate="{Binding SelectedDate}" Margin="5,5,1,5"/>
+                            <Button Content="Settings" CommandParameter="{Binding }" Command="{Binding OpenSettingsCommand}" Margin="1,5,5,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
                         <Label Content="Output Filename:" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <TextBox Name="txtOutput" Text="{Binding OutputName, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="{Binding IsBuilding, Converter={StaticResource InverseBoolConverter}}" />
                         <StackPanel Name="FileOptions">
@@ -95,7 +96,7 @@
                                 <Label Content="Encrypt:"/>
                                 <CheckBox IsChecked="{Binding Encrypt}" VerticalAlignment="Center"/>
                             </StackPanel>
-                            <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="{Binding Encrypt}" Text="{Binding PDFPass}"/>
+                            <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="{Binding Encrypt}" Visibility="{Binding Encrypt, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding PDFPass}"/>
                         </StackPanel>
                         <Button x:Name="button_BuildPDFS" Content="Build PDF" Margin="5,5,5,5" CommandParameter="{Binding }" Command="{Binding MergePDFCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <ProgressBar Width="150" Height="5"  VerticalAlignment="Center" Margin="5,5,5,5" Minimum="0" Maximum="{Binding TotalPages}" Value="{Binding BuildProgress}" Visibility="{Binding IsBuilding, Converter={StaticResource BooleanToVisibilityConverter}}"/>

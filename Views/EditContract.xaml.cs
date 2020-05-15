@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NielsenPDFv2.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -17,9 +18,21 @@ namespace NielsenPDFv2.Views
     /// </summary>
     public partial class EditContract : Window
     {
+        SettingsViewModel vm;
         public EditContract()
         {
             InitializeComponent();
+            vm = (SettingsViewModel)DataContext;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            DialogResult = vm.Refresh;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+
         }
     }
 }

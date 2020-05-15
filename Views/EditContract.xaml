@@ -3,26 +3,49 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:NielsenPDFv2.ViewModels"
         xmlns:local="clr-namespace:NielsenPDFv2.Views"
         mc:Ignorable="d"
-        Title="Edit Contract" 
-        Height="130" 
-        Width="218" 
-        VerticalAlignment="Stretch" 
-        HorizontalAlignment="Stretch"
-        ResizeMode="NoResize">
-    <DockPanel>
-        <DockPanel DockPanel.Dock="Top">
-            <Label Content="Name: " Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <TextBox Text="{Binding SelectedContract.ContractName}" Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-        </DockPanel>
-        <DockPanel DockPanel.Dock="Top">
-            <Label Content="Number: " Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <TextBox Text="{Binding SelectedContract.ContractNumber}" Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-        </DockPanel>
-        <DockPanel DockPanel.Dock="Top" LastChildFill="False" HorizontalAlignment="Center">
-            <Button Name="btn_SaveContract" Content="Save Changes" Margin="1,1,1,1" CommandParameter="{Binding }" Command="{Binding SaveContractCommand}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <Button Name="btn_Close" Content="Close" Margin="1,1,1,1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        </DockPanel>
-    </DockPanel>
+        Title="Edit Contracts" 
+        Height="425" 
+        Width="475" 
+        ResizeMode="NoResize"
+        Closing="Window_Closing"
+        Closed="Window_Closed">
+    <Window.DataContext>
+        <viewmodels:SettingsViewModel/>
+    </Window.DataContext>
+    <StackPanel Orientation="Horizontal" Margin="5,5,5,5">
+        <StackPanel>
+            <Label Content="Contracts:"/>
+            <ListBox 
+                ItemsSource="{Binding Contracts, UpdateSourceTrigger=PropertyChanged}"
+                SelectedItem="{Binding SelectedContract, UpdateSourceTrigger=PropertyChanged}"
+                SelectedIndex="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ScrollViewer.VerticalScrollBarVisibility="Visible" Height="307">
+            </ListBox>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="New" VerticalAlignment="Center" Margin="5,5,5,5" CommandParameter="{Binding }" Command="{Binding AddContractCommand}"/>
+                <Button Content="Save" VerticalAlignment="Center" Margin="5,5,5,5" CommandParameter="{Binding }" Command="{Binding SaveContractCommand}"/>
+                <Button Content="Delete" VerticalAlignment="Center" Margin="5,5,5,5" Foreground="Red" CommandParameter="{Binding }" Command="{Binding RemoveContractCommand}"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel>
+            <Label Content="Contract Details:"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="ID:"/>
+                <Label Content="{Binding SelectedContract.ID, FallbackValue='0'}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Name:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedContract.ContractName, FallbackValue='Contract Name', UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Right" Width="150"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Number:"/>
+                <TextBox Text="{Binding SelectedContract.ContractNumber, UpdateSourceTrigger=PropertyChanged}" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </StackPanel>
+            <Label Content="Last Used Directory:"/>
+            <TextBox Text="{Binding SelectedContract.LastUsedDirectory, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,5,0"/>
+        </StackPanel>
+    </StackPanel>
 </Window>
