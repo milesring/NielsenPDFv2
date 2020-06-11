@@ -5,13 +5,15 @@ using System.Text;
 
 namespace NielsenPDFv2.Models
 {
-    class FileObject : INotifyPropertyChanged
+    public class FileObject : INotifyPropertyChanged
     {
         #region Locals
         private string fileName;
         private string filePath;
         private int fileNum;
         private int numPages;
+        private string password;
+        private bool passwordProtected;
         #endregion
 
         public FileObject() { }
@@ -54,6 +56,26 @@ namespace NielsenPDFv2.Models
             {
                 numPages = value;
                 OnPropertyChanged(nameof(NumPages));
+            }
+        }
+
+        public string Password
+        {
+            get { return password; }
+            set
+            {
+                password = value;
+                OnPropertyChanged(nameof(Password));
+            }
+        }
+
+        public bool PasswordProtected
+        {
+            get { return passwordProtected; }
+            set
+            {
+                passwordProtected = value;
+                OnPropertyChanged(nameof(PasswordProtected));
             }
         }
         #endregion

@@ -1,5 +1,4 @@
-﻿using NielsenPDFv2.ViewModels;
-using NielsenPDFv2.Views;
+﻿using NielsenPDFv2.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,9 +7,9 @@ using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
 {
-    public class OpenSettingsCommand : ICommand
+    public class PasswordDialogCommand : ICommand
     {
-        private EditContract editContractView;
+        public string Password { get; set; }
         public event EventHandler CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
@@ -24,12 +23,11 @@ namespace NielsenPDFv2.Commands
 
         public void Execute(object parameter)
         {
-            var mainViewModel = parameter as MainViewModel;
-            editContractView = new EditContract(mainViewModel);
-            editContractView.Owner = Application.Current.MainWindow;
-            editContractView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            mainViewModel.Refresh = editContractView.ShowDialog();
-
+            PasswordInput passwordInput = new PasswordInput();
+            passwordInput.Owner = Application.Current.MainWindow;
+            passwordInput.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            passwordInput.ShowDialog();
+            Password = passwordInput.Password;
         }
     }
 }

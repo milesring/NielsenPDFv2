@@ -19,10 +19,11 @@ namespace NielsenPDFv2.Views
     public partial class EditContract : Window
     {
         SettingsViewModel vm;
-        public EditContract()
+        public EditContract(MainViewModel mainViewModel)
         {
             InitializeComponent();
             vm = (SettingsViewModel)DataContext;
+            vm.MainViewModel = mainViewModel;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

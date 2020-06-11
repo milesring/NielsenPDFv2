@@ -77,6 +77,13 @@
                                 <GridViewColumn Header="File Path" DisplayMemberBinding="{Binding FilePath}" Width="Auto"/>
                             </GridView>
                         </ListView.View>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <EventSetter Event="MouseMove" Handler="OnMouseMove"/>
+                                <EventSetter Event="MouseEnter" Handler="ListViewItem_MouseEnter"/>
+                                <EventSetter Event="MouseLeave" Handler="ListViewItem_MouseLeave"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
                     </ListView>
                 </Border>
                 <Border Grid.Column="2" Grid.Row="0" Grid.RowSpan="5" Padding="5">
@@ -89,10 +96,6 @@
                         <TextBox Name="txtOutput" Text="{Binding OutputName, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="{Binding IsBuilding, Converter={StaticResource InverseBoolConverter}}" />
                         <StackPanel Name="FileOptions">
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="Overwrite File:"/>
-                                <CheckBox IsChecked="{Binding OverwriteFile}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
                                 <Label Content="Encrypt:"/>
                                 <CheckBox IsChecked="{Binding Encrypt}" VerticalAlignment="Center"/>
                             </StackPanel>
@@ -103,6 +106,7 @@
                         <Viewbox StretchDirection="DownOnly">
                             <Label Content="{Binding BuildStatus, FallbackValue=None}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding BuildStatus, Converter={StaticResource BuildStatusConverter}}"/>
                         </Viewbox>
+                        
                     </StackPanel>
                 </Border>
             </Grid>

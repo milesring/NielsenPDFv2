@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.Win32;
+using System.Timers;
 using NielsenPDFv2.Models;
 using NielsenPDFv2.ViewModels;
+using System.Diagnostics;
+using System.Windows.Threading;
+using iText.IO.Util;
 
 namespace NielsenPDFv2.Views
 {
@@ -17,14 +19,20 @@ namespace NielsenPDFv2.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        DispatcherTimer t;
         Point startPoint = new Point();
         int startIndex = -1;
         MainViewModel viewModel;
+        PDFPreview pdfPreview;
+
         public MainWindow()
         {
             InitializeComponent();
             viewModel = (MainViewModel)DataContext;
+            ResetTimer();
         }
+
+
 
         public void cb_Contracts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -133,6 +141,58 @@ namespace NielsenPDFv2.Views
             return null;
         }
 
+        #endregion
+
+        #region FileMouseMove
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            var file = sender as ListViewItem;
+            viewModel.HighlightedFile = file.Content as FileObject;
+        }
+        #endregion
+
+        #region PDFPreview
+        void ResetTimer()
+        {
+            if (t != null)
+            {
+                t.Tick -= t_Elapsed;
+            }
+            t = new DispatcherTimer();
+            t.Tick += t_Elapsed;
+            t.Interval = TimeSpan.FromSeconds(1);
+        }
+
+        private void ListViewItem_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (viewModel.PDFPreviews)
+            {
+                t.Start();
+            }
+        }
+
+        private void ListViewItem_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (viewModel.PDFPreviews || t.IsEnabled)
+            {
+                t.Stop();
+                ResetTimer();
+            }
+        }
+
+        void t_Elapsed(object sender, EventArgs e)
+        {
+            if(pdfPreview != null && pdfPreview.IsLoaded)
+            {
+                return;
+            }
+            pdfPreview = new PDFPreview(viewModel.HighlightedFile);
+            pdfPreview.Owner = Application.Current.MainWindow;
+            //offset so the window opens with the mouse positioned in the webbrowser control, due to mouse events not working how they should
+            pdfPreview.Left = PointToScreen(Mouse.GetPosition(this)).X-10;
+            pdfPreview.Top = PointToScreen(Mouse.GetPosition(this)).Y-10;
+            pdfPreview.Show();
+        }
         #endregion
     }
 }

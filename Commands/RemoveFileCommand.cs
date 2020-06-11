@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
 {
-    class RemoveFileCommand : ICommand
+    public class RemoveFileCommand : ICommand
     {
         public event EventHandler CanExecuteChanged
         {

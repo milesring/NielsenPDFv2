@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
 {
-    class BrowseFileCommand : ICommand
+    public class BrowseFileCommand : ICommand
     {
         public event EventHandler CanExecuteChanged
         {

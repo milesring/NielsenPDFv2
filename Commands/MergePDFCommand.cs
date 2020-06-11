@@ -11,8 +11,31 @@ using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
 {
-    class MergePDFCommand : ICommand
+    public class MergePDFCommand : ICommand
     {
+        #region Locals
+        private PasswordDialogCommand passwordDialogCommand;
+        #endregion
+
+        #region Properties
+        public PasswordDialogCommand PasswordDialogCommand
+        {
+            get
+            {
+                if(passwordDialogCommand == null)
+                {
+                    passwordDialogCommand = new PasswordDialogCommand();
+                }
+                return passwordDialogCommand;
+            }
+            set
+            {
+                passwordDialogCommand = value;
+            }
+        }
+        #endregion
+
+
         #region ICommand Members
         public event EventHandler CanExecuteChanged
         {
@@ -103,20 +126,23 @@ namespace NielsenPDFv2.Commands
                     }
                     try
                     {
-                        var pdfReader = new PdfReader(file.FilePath);
-                        doc = new PdfDocument(pdfReader);
-                    }
-                    catch (iText.Kernel.PdfException e)
-                    {
-                        if (e.Message.Contains("password"))
+                        if (file.PasswordProtected)
                         {
-                            //openpopup to enter password
                             var readerProps = new ReaderProperties();
-                            readerProps.SetPassword(Encoding.ASCII.GetBytes("test"));
+                            readerProps.SetPassword(Encoding.ASCII.GetBytes(file.Password));
                             var pdfReader = new PdfReader(file.FilePath, readerProps);
                             pdfReader.SetUnethicalReading(true);
                             doc = new PdfDocument(pdfReader);
                         }
+                        else
+                        {
+                            var pdfReader = new PdfReader(file.FilePath);
+                            doc = new PdfDocument(pdfReader);
+                        }
+                    }
+                    catch (iText.Kernel.PdfException e)
+                    {
+                        
                     }
                     var numPages = doc.GetNumberOfPages();
                     merger.Merge(doc, 1, numPages);

@@ -22,6 +22,7 @@ namespace NielsenPDFv2.ViewModels
         private int selectedIndex;
         private bool? refresh;
         private bool contractEdited;
+        private MainViewModel mainViewModel;
         #endregion
 
 
@@ -100,8 +101,55 @@ namespace NielsenPDFv2.ViewModels
             get { return contractEdited; }
             set
             {
-                contractEdited = true;
+                contractEdited = value;
                 OnPropertyChanged(nameof(ContractEdited));
+            }
+        }
+
+        public MainViewModel MainViewModel {
+            get
+            {
+                return mainViewModel;
+            }
+            set
+            {
+                mainViewModel = value;
+                PDFPreviews = mainViewModel.PDFPreviews;
+                Overwrite = mainViewModel.OverwriteFile;
+
+            }
+        }
+
+        public bool PDFPreviews
+        {
+            get { 
+                if(MainViewModel == null)
+                {
+                    return false;
+                }
+                return MainViewModel.PDFPreviews; 
+            }
+            set
+            {
+                MainViewModel.PDFPreviews = value;
+                OnPropertyChanged(nameof(PDFPreviews));
+            }
+        }
+
+        public bool Overwrite
+        {
+            get
+            {
+                if(MainViewModel == null)
+                {
+                    return false;
+                }
+                return MainViewModel.OverwriteFile;
+            }
+            set
+            {
+                MainViewModel.OverwriteFile = value;
+                OnPropertyChanged(nameof(Overwrite));
             }
         }
         #endregion

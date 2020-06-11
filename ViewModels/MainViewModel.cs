@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Windows;
+using iText.IO.Util;
 using NielsenPDFv2.Commands;
 using NielsenPDFv2.Models;
 using NielsenPDFv2.Tools;
+using SQLitePCL;
 
 namespace NielsenPDFv2.ViewModels
 {
-    class MainViewModel : ViewModel
+    public class MainViewModel : ViewModel
     {
 
         #region Locals
@@ -20,6 +21,7 @@ namespace NielsenPDFv2.ViewModels
         private string workingDirectory = "No Working Directory";
         private ObservableCollection<FileObject> files;
         private List<FileObject> selectedFiles = new List<FileObject>();
+        private FileObject highlightedFile;
         private Utility utility = new Utility();
         private string outputName;
         private DateTime selectedDate = DateTime.Today;
@@ -28,6 +30,7 @@ namespace NielsenPDFv2.ViewModels
         private RemoveFileCommand removeFileCommand;
         private BrowseFileCommand browseFileCommand;
         private OpenSettingsCommand openSettingsCommand;
+        private PasswordDialogCommand passwordDialogCommand;
         private string buildStatus;
         private int buildProgress;
         private bool isBuilding = false;
@@ -36,18 +39,22 @@ namespace NielsenPDFv2.ViewModels
         private string pdfPass;
         private int totalPages;
         private bool? refresh;
+        private bool pdfPreviews;
         #endregion
 
         public MainViewModel()
         {
             Title = "Contracts";
+            LoadSettings();
             LoadItems();
         }
 
         #region Public Methods
         public void AddFile(string path)
         {
-            var file = new FileObject { FileName = utility.TrimFileName(path), FilePath = path, FileNum = Files.Count + 1, NumPages = PDFTools.GetTotalPages(path) };
+            var file = new FileObject { FileName = utility.TrimFileName(path), FilePath = path, FileNum = Files.Count + 1};
+            PDFTools.CheckPDFPassword(file);
+            file.NumPages = PDFTools.GetTotalPages(file);
             TotalPages += file.NumPages;
             Files.Add(file);
         }
@@ -72,6 +79,20 @@ namespace NielsenPDFv2.ViewModels
         #endregion
 
         #region Private Methods
+        private void LoadSettings()
+        {
+            var val = Application.Current.Properties[nameof(OverwriteFile)];
+            if (val != null)
+            {
+                OverwriteFile = bool.Parse(val.ToString());
+            }
+            val = Application.Current.Properties[nameof(PDFPreviews)];
+            if(val != null)
+            {
+                PDFPreviews = bool.Parse(val.ToString());
+            }
+            
+        }
         private async void LoadItems()
         {
             var initialIndex = SelectedIndex;
@@ -178,6 +199,16 @@ namespace NielsenPDFv2.ViewModels
             {
                 selectedFiles = value;
                 OnPropertyChanged(nameof(SelectedFiles));
+            }
+        }
+
+        public FileObject HighlightedFile
+        {
+            get { return highlightedFile; }
+            set
+            {
+                highlightedFile = value;
+                OnPropertyChanged(nameof(HighlightedFile));
             }
         }
 
@@ -300,6 +331,7 @@ namespace NielsenPDFv2.ViewModels
             set
             {
                 overwriteFile = value;
+                Application.Current.Properties[nameof(OverwriteFile)] = value;
                 OnPropertyChanged(nameof(OverwriteFile));
             }
         }
@@ -345,6 +377,16 @@ namespace NielsenPDFv2.ViewModels
                     LoadItems();
                 }
                 OnPropertyChanged(nameof(Refresh));
+            }
+        }
+
+        public bool PDFPreviews
+        {
+            get { return pdfPreviews; }
+            set
+            {
+                pdfPreviews = value;
+                OnPropertyChanged(nameof(PDFPreviews));
             }
         }
         #endregion
@@ -428,6 +470,23 @@ namespace NielsenPDFv2.ViewModels
             {
                 openSettingsCommand = value;
                 OnPropertyChanged(nameof(OpenSettingsCommand));
+            }
+        }
+
+        public PasswordDialogCommand PasswordDialogCommand
+        {
+            get
+            {
+                if(passwordDialogCommand == null)
+                {
+                    passwordDialogCommand = new PasswordDialogCommand();
+                }
+                return passwordDialogCommand;
+            }
+            set
+            {
+                passwordDialogCommand = value;
+                OnPropertyChanged(nameof(PasswordDialogCommand));
             }
         }
         #endregion
