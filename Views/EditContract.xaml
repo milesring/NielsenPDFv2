@@ -33,10 +33,6 @@
         <StackPanel>
             <Label Content="Contract Details:" FontWeight="DemiBold" HorizontalAlignment="Center"/>
             <StackPanel Orientation="Horizontal">
-                <Label Content="ID:"/>
-                <Label Content="{Binding SelectedContract.ID, FallbackValue='0'}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
                 <Label Content="Name:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBox Text="{Binding SelectedContract.ContractName, FallbackValue='Contract Name', UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Right" Width="150"/>
             </StackPanel>
@@ -48,8 +44,8 @@
             <TextBox Text="{Binding SelectedContract.LastUsedDirectory, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,5,0"/>
             <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Center" Fill="Black" Height="1" Margin="5,20,5,10"/>
             <StackPanel>
-                <Label Content="General Settings" HorizontalAlignment="Center" FontWeight="DemiBold"/>
-                <Label Content="Sort Contracts:" IsEnabled="False"/>
+                <Label Content="General Settings:" HorizontalAlignment="Center" FontWeight="DemiBold"/>
+                <Label Content="Sort Contracts: (WIP)" IsEnabled="False"/>
                 <ComboBox HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False"/>
                 <CheckBox Margin="5,5,5,5" Content="PDF Previews" IsChecked="{Binding PDFPreviews}"/>
                 <CheckBox Margin="5,5,5,5" Content="Overwrite Existing Files" IsChecked="{Binding Overwrite}"/>
