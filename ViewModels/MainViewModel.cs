@@ -386,6 +386,7 @@ namespace NielsenPDFv2.ViewModels
             set
             {
                 pdfPreviews = value;
+                Application.Current.Properties[nameof(PDFPreviews)] = value;
                 OnPropertyChanged(nameof(PDFPreviews));
             }
         }
