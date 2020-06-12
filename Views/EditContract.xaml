@@ -30,7 +30,7 @@
                 <Button Content="Delete" VerticalAlignment="Center" Margin="5,5,5,5" Foreground="Red" CommandParameter="{Binding }" Command="{Binding RemoveContractCommand}"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel>
+        <StackPanel Width="363" Height="379">
             <Label Content="Contract Details:" FontWeight="DemiBold" HorizontalAlignment="Center"/>
             <StackPanel Orientation="Horizontal">
                 <Label Content="Name:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -41,7 +41,7 @@
                 <TextBox Text="{Binding SelectedContract.ContractNumber, UpdateSourceTrigger=PropertyChanged}" Width="150" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </StackPanel>
             <Label Content="Last Used Directory:"/>
-            <TextBox Text="{Binding SelectedContract.LastUsedDirectory, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,5,0"/>
+            <TextBox Text="{Binding SelectedContract.LastUsedDirectory, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,0,5,0" Width="339"/>
             <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Center" Fill="Black" Height="1" Margin="5,20,5,10"/>
             <StackPanel>
                 <Label Content="General Settings:" HorizontalAlignment="Center" FontWeight="DemiBold"/>
@@ -51,6 +51,6 @@
                 <CheckBox Margin="5,5,5,5" Content="Overwrite Existing Files" IsChecked="{Binding Overwrite}"/>
             </StackPanel>
         </StackPanel>
-        
+
     </StackPanel>
 </Window>
