@@ -115,8 +115,6 @@ namespace NielsenPDFv2.ViewModels
             {
                 mainViewModel = value;
                 PDFPreviews = mainViewModel.PDFPreviews;
-                Overwrite = mainViewModel.OverwriteFile;
-
             }
         }
 
@@ -133,23 +131,6 @@ namespace NielsenPDFv2.ViewModels
             {
                 MainViewModel.PDFPreviews = value;
                 OnPropertyChanged(nameof(PDFPreviews));
-            }
-        }
-
-        public bool Overwrite
-        {
-            get
-            {
-                if(MainViewModel == null)
-                {
-                    return false;
-                }
-                return MainViewModel.OverwriteFile;
-            }
-            set
-            {
-                MainViewModel.OverwriteFile = value;
-                OnPropertyChanged(nameof(Overwrite));
             }
         }
         #endregion

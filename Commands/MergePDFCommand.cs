@@ -1,12 +1,18 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
+using iText.Layout.Element;
 using NielsenPDFv2.Models;
 using NielsenPDFv2.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NielsenPDFv2.Commands
@@ -63,6 +69,13 @@ namespace NielsenPDFv2.Commands
                 return false;
             }
 
+            string checkPath = Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName)+".pdf";
+            if(viewModel.Files.Any(file=>file.FilePath == checkPath))
+            {
+                viewModel.BuildStatus = "Error: Name matches file already in list";
+                return false;
+            }
+
             return true;
         }
 
@@ -79,25 +92,41 @@ namespace NielsenPDFv2.Commands
         {
             viewModel.BuildStatus = "Merging PDFs...";
             viewModel.BuildProgress = 0;
-            string outputPath = viewModel.WorkingDirectory + "\\" + viewModel.OutputName + ".pdf";
+
+            bool overwriteFile = false;
+            //Check if desired output file already exists
+            if(File.Exists(Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf")))
+            {
+                //ask user to overwrite file
+                var result = MessageBox.Show("File exists, overwrite?", "Overwrite existing file", MessageBoxButton.OKCancel);
+                if(result == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                else
+                {
+                    overwriteFile = true;
+                }
+            }
+
+            //Copy of real file list to manipulate
+            List<FileObject> tempFileList = CopyFileObjectList(viewModel.Files);
+            
+
+            //create a temp directory to work in
+            string outputPath = Path.Combine(viewModel.WorkingDirectory, "PDFTemp", viewModel.OutputName + ".pdf");
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+
+            //copy all files to work in a temp directory.
+            CopyTempFiles(viewModel, tempFileList, outputPath);
+
             PdfDocument pdf = null;
             PdfMerger merger = null;
             PdfDocument doc = null;
+
             try
             {
-                if (File.Exists(outputPath))
-                {
-                    if (!viewModel.OverwriteFile)
-                    {
-                        viewModel.BuildStatus = "Failed: Output PDF already exists.";
-                        return;
-                    }
-                    else
-                    {
-                        outputPath = Path.Combine(viewModel.WorkingDirectory, "PDFTemp", viewModel.OutputName + ".pdf");
-                        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
-                    }
-                }
+                //check user option for encryption
                 if (viewModel.Encrypt)
                 {
                     pdf = new PdfDocument(new PdfWriter(outputPath, new WriterProperties()
@@ -113,12 +142,12 @@ namespace NielsenPDFv2.Commands
                     pdf = new PdfDocument(new PdfWriter(outputPath));
                 }
                 merger = new PdfMerger(pdf);
-                foreach (FileObject file in viewModel.Files)
+
+                foreach (var file in tempFileList)
                 {
                     if (!File.Exists(file.FilePath))
                     {
-                        viewModel.BuildStatus = $"Failed: {file.FileName} no longer exists and has been removed from the list.";
-                        viewModel.Files.Remove(file);
+                        viewModel.BuildStatus = $"Failed: Temporary file({file.FileName}) no longer exists.";
                         pdf.Close();
                         merger.Close();
                         File.Delete(outputPath);
@@ -126,6 +155,7 @@ namespace NielsenPDFv2.Commands
                     }
                     try
                     {
+                        //check if file is protected
                         if (file.PasswordProtected)
                         {
                             var readerProps = new ReaderProperties();
@@ -142,19 +172,31 @@ namespace NielsenPDFv2.Commands
                     }
                     catch (iText.Kernel.PdfException e)
                     {
-                        
+
                     }
+                    //merge document
                     var numPages = doc.GetNumberOfPages();
                     merger.Merge(doc, 1, numPages);
+
                     doc.Close();
-                    viewModel.BuildProgress+=numPages;
+
+                    //update build progress
+                    viewModel.BuildProgress += numPages;
                 }
                 pdf.Close();
-                if (viewModel.OverwriteFile && File.Exists(Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf")))
+
+                //move to orig location
+                File.Move(outputPath, Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf"), overwriteFile);
+
+                //delete temp files
+                foreach (var file in tempFileList)
                 {
-                    File.Move(outputPath, Path.Combine(viewModel.WorkingDirectory, viewModel.OutputName + ".pdf"), true);
-                    Directory.Delete(Path.GetDirectoryName(outputPath), true);
+                    File.Delete(file.FilePath);
                 }
+
+                //delete temp dir
+                Directory.Delete(Path.GetDirectoryName(outputPath));
+
                 viewModel.BuildStatus = "Success: PDF Successfully Created";
             }
             //CLEAN UP THIS EXCEPTION GARBAGE EVENTUALLY
@@ -175,6 +217,42 @@ namespace NielsenPDFv2.Commands
             {
                 viewModel.BuildStatus = "Failed: Attempting to modify a file in use";
             }
+
+        }
+
+        private static void CopyTempFiles(MainViewModel viewModel, List<FileObject> tempFileList, string outputPath)
+        {
+            var parentPath = Path.GetDirectoryName(outputPath);
+            for (int i = 0; i < tempFileList.Count; i++)
+            {
+                //get original file object
+                var origFile = viewModel.Files[i];
+
+                //get new temporary path to copy file to
+                var tempPath = Path.Combine(parentPath, Path.GetFileName(origFile.FilePath));
+
+                //check if temp file exists, we need the most updated copy
+                if (File.Exists(tempPath))
+                {
+                    File.Delete(tempPath);
+                }
+
+                //copy file
+                File.Copy(origFile.FilePath, tempPath);
+
+                //update temporary file in list
+                tempFileList[i].FilePath = tempPath;
+            }
+        }
+
+        private static List<FileObject> CopyFileObjectList(ObservableCollection<FileObject> original)
+        {
+            var returnList = new List<FileObject>();
+            foreach (var file in original)
+            {
+                returnList.Add(new FileObject(file));
+            }
+            return returnList;
         }
         #endregion
 

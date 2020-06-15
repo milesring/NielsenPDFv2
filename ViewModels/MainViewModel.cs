@@ -34,7 +34,6 @@ namespace NielsenPDFv2.ViewModels
         private string buildStatus;
         private int buildProgress;
         private bool isBuilding = false;
-        private bool overwriteFile;
         private bool encrypt;
         private string pdfPass;
         private int totalPages;
@@ -81,12 +80,7 @@ namespace NielsenPDFv2.ViewModels
         #region Private Methods
         private void LoadSettings()
         {
-            var val = Application.Current.Properties[nameof(OverwriteFile)];
-            if (val != null)
-            {
-                OverwriteFile = bool.Parse(val.ToString());
-            }
-            val = Application.Current.Properties[nameof(PDFPreviews)];
+            var val = Application.Current.Properties[nameof(PDFPreviews)];
             if(val != null)
             {
                 PDFPreviews = bool.Parse(val.ToString());
@@ -322,17 +316,6 @@ namespace NielsenPDFv2.ViewModels
             {
                 isBuilding = value;
                 OnPropertyChanged(nameof(IsBuilding));
-            }
-        }
-
-        public bool OverwriteFile
-        {
-            get { return overwriteFile; }
-            set
-            {
-                overwriteFile = value;
-                Application.Current.Properties[nameof(OverwriteFile)] = value;
-                OnPropertyChanged(nameof(OverwriteFile));
             }
         }
 

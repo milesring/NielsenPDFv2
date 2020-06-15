@@ -18,6 +18,17 @@ namespace NielsenPDFv2.Models
 
         public FileObject() { }
 
+        //copy constructor
+        public FileObject(FileObject orig)
+        {
+            FileName = orig.FileName;
+            FilePath = orig.FilePath;
+            FileNum = orig.FileNum;
+            NumPages = orig.NumPages;
+            Password = orig.Password;
+            PasswordProtected = orig.PasswordProtected;
+        }
+
         #region Properties
         public string FileName
         {

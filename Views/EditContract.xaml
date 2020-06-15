@@ -48,7 +48,6 @@
                 <Label Content="Sort Contracts: (WIP)" IsEnabled="False"/>
                 <ComboBox HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False"/>
                 <CheckBox Margin="5,5,5,5" Content="PDF Previews" IsChecked="{Binding PDFPreviews}"/>
-                <CheckBox Margin="5,5,5,5" Content="Overwrite Existing Files" IsChecked="{Binding Overwrite}"/>
             </StackPanel>
         </StackPanel>
 
